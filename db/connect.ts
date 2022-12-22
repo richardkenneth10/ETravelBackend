@@ -3,7 +3,7 @@ import mysql, { Connection } from "mysql";
 const connectDB = () =>
   new Promise<Connection>((resolve, reject) => {
     const con = mysql.createConnection({
-      host: "database-1.cluster-c5wjyxdbbmlo.us-east-1.rds.amazonaws.com",
+      host: "nodejs-apps.cluster-c5wjyxdbbmlo.us-east-1.rds.amazonaws.com",
       user: "admin",
       password: "richiemysql",
       database: "etravel",

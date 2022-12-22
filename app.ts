@@ -2,7 +2,7 @@ import "express-async-errors";
 
 import dotenv from "dotenv";
 dotenv.config();
-import express from "express";
+import express, { Request, Response } from "express";
 import connectDB from "./db/connect";
 import notFound from "./middleware/not-found";
 import errorHandlerMiddleware from "./middleware/error-handler";
@@ -14,7 +14,7 @@ const PORT = process.env.PORT || 5000;
 
 app.use(express.json());
 
-app.get("/", (req, res) => {
+app.get("/", (req: Request, res: Response) => {
   res.send("Welcome");
 });
 

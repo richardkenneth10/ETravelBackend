@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import connectDB from "../db/connect";
 import { CustomAPIError, BadRequestError } from "../errors";
-import Client from "twilio";
+const Client = require("twilio");
 import otpGenerator from "otp-generator";
 import GoogleAPIs from "googleapis";
 
