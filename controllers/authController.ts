@@ -27,7 +27,7 @@ const loginWithPhone = async (req: Request, res: Response) => {
 
   const message = await client.messages.create({
     body: `Hello from ETravel. Your verification code is ${otp}. It expires in 10 minutes. Do not disclose to anyone`,
-    from: "ETravel",
+    from: "+18125155378",
     to: "+2349039367642",
   });
   console.log(message.sid);
