@@ -2,6 +2,7 @@ import "express-async-errors";
 
 import dotenv from "dotenv";
 dotenv.config();
+import cookieParser from "cookie-parser";
 import express, { Request, Response } from "express";
 import connectDB from "./db/connect";
 import notFound from "./middleware/not-found";
@@ -10,9 +11,10 @@ import authRouter from "./routes/authRouter";
 
 const app = express();
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
+app.use(cookieParser(process.env.JWT_SECRET));
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Welcome");
