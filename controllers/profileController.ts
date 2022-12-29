@@ -1,11 +1,12 @@
 import axios from "axios";
 import { Request, Response } from "express";
+import { StatusCodes } from "http-status-codes";
 import connectDB from "../db/connect";
 import { BadRequestError } from "../errors";
 import { sendTokenWithResponse } from "./authController";
 
 const updateUserProfile = async (req: Request, res: Response) => {
-  const { email, first_name: firstName, last_name: lastName } = req.body;
+  const { email, firstName, lastName } = req.body;
   const userId = (req as any).user.user.userId;
 
   const updateFields = (): Map<string, string> => {
@@ -40,7 +41,9 @@ const updateUserProfile = async (req: Request, res: Response) => {
     [...updateFields().values(), userId],
     async (err, resp3) => {
       if (err) {
-        return res.status(500).json({ msg: "Database error" });
+        return res
+          .status(StatusCodes.INTERNAL_SERVER_ERROR)
+          .json({ msg: "Database error" });
       }
       const initialUser = (req as any).user.user;
 
@@ -95,11 +98,15 @@ const updateUserProfileFromGoogle = async (req: Request, res: Response) => {
     [initialUser.userId],
     async (err, resp) => {
       if (err) {
-        return res.status(500).json({ msg: "Database error" });
+        return res
+          .status(StatusCodes.INTERNAL_SERVER_ERROR)
+          .json({ msg: "Database error" });
       }
 
       if (resp.length === 0) {
-        return res.status(400).json({ msg: "User does not exist" });
+        return res
+          .status(StatusCodes.BAD_REQUEST)
+          .json({ msg: "User does not exist" });
       }
 
       con.query(
@@ -107,11 +114,13 @@ const updateUserProfileFromGoogle = async (req: Request, res: Response) => {
         [googleUserData.id],
         async (err, resp) => {
           if (err) {
-            return res.status(500).json({ msg: "Database error" });
+            return res
+              .status(StatusCodes.INTERNAL_SERVER_ERROR)
+              .json({ msg: "Database error" });
           }
 
           if (resp.length > 0) {
-            return res.status(400).json({
+            return res.status(StatusCodes.BAD_REQUEST).json({
               msg: "A user with this Google account already exists. Log in with the account if you are the owner",
             });
           }
@@ -128,7 +137,9 @@ const updateUserProfileFromGoogle = async (req: Request, res: Response) => {
             ],
             async (err, resp2) => {
               if (err) {
-                return res.status(500).json({ msg: "Database error1" });
+                return res
+                  .status(StatusCodes.INTERNAL_SERVER_ERROR)
+                  .json({ msg: "Database error1" });
               }
               console.log(resp2);
 
@@ -190,11 +201,15 @@ const updateUserProfileFromFacebook = async (req: Request, res: Response) => {
     [initialUser.userId],
     async (err, resp) => {
       if (err) {
-        return res.status(500).json({ msg: "Database error" });
+        return res
+          .status(StatusCodes.INTERNAL_SERVER_ERROR)
+          .json({ msg: "Database error" });
       }
 
       if (resp.length === 0) {
-        return res.status(400).json({ msg: "User does not exist" });
+        return res
+          .status(StatusCodes.BAD_REQUEST)
+          .json({ msg: "User does not exist" });
       }
 
       con.query(
@@ -202,11 +217,13 @@ const updateUserProfileFromFacebook = async (req: Request, res: Response) => {
         [fbUserData.id],
         async (err, resp) => {
           if (err) {
-            return res.status(500).json({ msg: "Database error" });
+            return res
+              .status(StatusCodes.INTERNAL_SERVER_ERROR)
+              .json({ msg: "Database error" });
           }
 
           if (resp.length > 0) {
-            return res.status(400).json({
+            return res.status(StatusCodes.BAD_REQUEST).json({
               msg: "A user with this Facebook account already exists. Log in with the account if you are the owner",
             });
           }
@@ -223,7 +240,9 @@ const updateUserProfileFromFacebook = async (req: Request, res: Response) => {
             ],
             async (err, resp) => {
               if (err) {
-                return res.status(500).json({ msg: "Database error" });
+                return res
+                  .status(StatusCodes.INTERNAL_SERVER_ERROR)
+                  .json({ msg: "Database error" });
               }
               const user: {
                 id: number;
@@ -271,11 +290,13 @@ const verifyAndUpdatePhone = async (req: Request, res: Response) => {
     [phone],
     async (err, resp) => {
       if (err) {
-        return res.status(500).json({ msg: "Database error" });
+        return res
+          .status(StatusCodes.INTERNAL_SERVER_ERROR)
+          .json({ msg: "Database error" });
       }
 
       if (resp.length === 0) {
-        return res.status(400).json({
+        return res.status(StatusCodes.BAD_REQUEST).json({
           msg: `There is currently no OTP verification process going on for phone: ${phone}`,
         });
       }
@@ -286,7 +307,9 @@ const verifyAndUpdatePhone = async (req: Request, res: Response) => {
           new Date().getTime();
 
       if (!isValidOTP) {
-        return res.status(400).json({ msg: `Invalid credentials` });
+        return res
+          .status(StatusCodes.BAD_REQUEST)
+          .json({ msg: `Invalid credentials` });
       }
 
       con.query(
@@ -294,7 +317,9 @@ const verifyAndUpdatePhone = async (req: Request, res: Response) => {
         [phone],
         async (err, resp2) => {
           if (err) {
-            return res.status(500).json({ msg: "Database error" });
+            return res
+              .status(StatusCodes.INTERNAL_SERVER_ERROR)
+              .json({ msg: "Database error" });
           }
 
           con.query(
@@ -302,23 +327,25 @@ const verifyAndUpdatePhone = async (req: Request, res: Response) => {
             [phone],
             async (err, resp3) => {
               if (err) {
-                return res.status(500).json({ msg: "Database error" });
+                return res
+                  .status(StatusCodes.INTERNAL_SERVER_ERROR)
+                  .json({ msg: "Database error" });
               }
 
               if (resp3.length > 0) {
                 return res
-                  .status(400)
+                  .status(StatusCodes.BAD_REQUEST)
                   .json({ msg: `A user already exists with phone: ${phone}` });
               }
-              console.log(phone);
-              console.log(userId);
 
               con.query(
                 "UPDATE users SET phone = ? WHERE id = ?",
                 [phone, userId],
                 async (err, resp4) => {
                   if (err) {
-                    return res.status(500).json({ msg: "Database error" });
+                    return res
+                      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+                      .json({ msg: "Database error" });
                   }
 
                   const user: {

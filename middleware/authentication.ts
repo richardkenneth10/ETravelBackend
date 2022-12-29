@@ -34,7 +34,7 @@ export { authenticateUser };
 //       [payload.user.id, refreshToken],
 //       async (err, resp3) => {
 //         if (err) {
-//           return res.status(500).json({ msg: "Database error" });
+//           return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ msg: "Database error" });
 //         }
 
 //         const existingToken = resp3[0];

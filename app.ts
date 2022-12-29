@@ -10,6 +10,7 @@ import errorHandlerMiddleware from "./middleware/error-handler";
 import authRouter from "./routes/authRouter";
 import profileRouter from "./routes/profileRouter";
 import tokenRouter from "./routes/tokenRouter";
+import paymentRouter from "./routes/paymentRouter";
 
 const app = express();
 
@@ -25,6 +26,7 @@ app.get("/", (req: Request, res: Response) => {
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/profile", profileRouter);
 app.use("/api/v1/token", tokenRouter);
+app.use("/api/v1/payment", paymentRouter);
 
 app.use(notFound);
 app.use(errorHandlerMiddleware);

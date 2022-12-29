@@ -10,6 +10,7 @@ import axios from "axios";
 import { createAccessJWT, createRefreshJWT } from "../utils/jwt";
 import crypto from "crypto";
 import createTokenUser from "../utils/createTokenUser";
+import { StatusCodes } from "http-status-codes";
 
 const accountSid = "AC7d60c28d42446c12bb412c9a1f10d19f";
 const authToken = process.env.TWILIO_AUTH_TOKEN;
@@ -43,7 +44,9 @@ const sendOTP = async (req: Request, res: Response) => {
     [phone],
     async (err, resp) => {
       if (err) {
-        return res.status(500).json({ msg: "Database error" });
+        return res
+          .status(StatusCodes.INTERNAL_SERVER_ERROR)
+          .json({ msg: "Database error" });
       }
 
       if (resp.length !== 0) {
@@ -53,7 +56,7 @@ const sendOTP = async (req: Request, res: Response) => {
 
         if (!isUpToOneMinFromPreviousSentTime) {
           return res
-            .status(400)
+            .status(StatusCodes.BAD_REQUEST)
             .json({ msg: `Multiple requests in less than 1 minute` });
         }
 
@@ -62,7 +65,9 @@ const sendOTP = async (req: Request, res: Response) => {
           const message = await sendMessage("+2349039367642", otp);
         } catch (error) {
           console.log(error);
-          return res.status(500).json({ msg: "Internal server error" });
+          return res
+            .status(StatusCodes.INTERNAL_SERVER_ERROR)
+            .json({ msg: "Internal server error" });
         }
 
         const oneMinuteFromNow = new Date().getTime() + oneMinute;
@@ -75,7 +80,9 @@ const sendOTP = async (req: Request, res: Response) => {
           [otp, tenMinutesDateTimeFromNow, oneMinuteDateTimeFromNow, phone],
           async (err, resp2) => {
             if (err) {
-              return res.status(500).json({ msg: "Database error" });
+              return res
+                .status(StatusCodes.INTERNAL_SERVER_ERROR)
+                .json({ msg: "Database error" });
             }
 
             return res.send("OTP sent");
@@ -89,7 +96,9 @@ const sendOTP = async (req: Request, res: Response) => {
         const message = await sendMessage("+2349039367642", otp);
       } catch (error) {
         console.log(error);
-        return res.status(500).json({ msg: "Internal server error" });
+        return res
+          .status(StatusCodes.INTERNAL_SERVER_ERROR)
+          .json({ msg: "Internal server error" });
       }
 
       const oneMinuteFromNow = new Date().getTime() + oneMinute;
@@ -102,7 +111,9 @@ const sendOTP = async (req: Request, res: Response) => {
         [otp, tenMinutesDateTimeFromNow, oneMinuteDateTimeFromNow, phone],
         async (err, resp3) => {
           if (err) {
-            return res.status(500).json({ msg: "Database error" });
+            return res
+              .status(StatusCodes.INTERNAL_SERVER_ERROR)
+              .json({ msg: "Database error" });
           }
 
           return res.send("OTP sent");
@@ -125,11 +136,13 @@ const verifyPhoneAndLogin = async (req: Request, res: Response) => {
     [phone],
     async (err, resp) => {
       if (err) {
-        return res.status(500).json({ msg: "Database error" });
+        return res
+          .status(StatusCodes.INTERNAL_SERVER_ERROR)
+          .json({ msg: "Database error" });
       }
 
       if (resp.length === 0) {
-        return res.status(400).json({
+        return res.status(StatusCodes.BAD_REQUEST).json({
           msg: `There is currently no OTP verification process going on for phone: ${phone}`,
         });
       }
@@ -140,7 +153,9 @@ const verifyPhoneAndLogin = async (req: Request, res: Response) => {
           new Date().getTime();
 
       if (!isValidOTP) {
-        return res.status(400).json({ msg: `Invalid credentials` });
+        return res
+          .status(StatusCodes.BAD_REQUEST)
+          .json({ msg: `Invalid credentials` });
       }
 
       con.query(
@@ -148,7 +163,9 @@ const verifyPhoneAndLogin = async (req: Request, res: Response) => {
         [phone],
         async (err, resp2) => {
           if (err) {
-            return res.status(500).json({ msg: "Database error" });
+            return res
+              .status(StatusCodes.INTERNAL_SERVER_ERROR)
+              .json({ msg: "Database error" });
           }
 
           con.query(
@@ -156,7 +173,9 @@ const verifyPhoneAndLogin = async (req: Request, res: Response) => {
             [phone],
             async (err, resp3) => {
               if (err) {
-                return res.status(500).json({ msg: "Database error" });
+                return res
+                  .status(StatusCodes.INTERNAL_SERVER_ERROR)
+                  .json({ msg: "Database error" });
               }
 
               const user = resp3[0];
@@ -168,7 +187,9 @@ const verifyPhoneAndLogin = async (req: Request, res: Response) => {
                 [phone],
                 async (err, resp4) => {
                   if (err) {
-                    return res.status(500).json({ msg: "Database error" });
+                    return res
+                      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+                      .json({ msg: "Database error" });
                   }
                   const user = {
                     id: resp4.insertId,
@@ -212,7 +233,9 @@ const sendTokenWithResponse = async (
     [user.id],
     async (err, resp) => {
       if (err) {
-        return res.status(500).json({ msg: "Database error" });
+        return res
+          .status(StatusCodes.INTERNAL_SERVER_ERROR)
+          .json({ msg: "Database error" });
       }
 
       const existingToken = resp[0];
@@ -249,7 +272,9 @@ const sendTokenWithResponse = async (
         [refreshToken, user.id],
         async (err, resp4) => {
           if (err) {
-            return res.status(500).json({ msg: "Database error" });
+            return res
+              .status(StatusCodes.INTERNAL_SERVER_ERROR)
+              .json({ msg: "Database error" });
           }
 
           const refreshJWT = createRefreshJWT({
@@ -296,7 +321,9 @@ const loginWithGoogle = async (req: Request, res: Response) => {
     [googleUserData.id],
     async (err, resp) => {
       if (err) {
-        return res.status(500).json({ msg: "Database error" });
+        return res
+          .status(StatusCodes.INTERNAL_SERVER_ERROR)
+          .json({ msg: "Database error" });
       }
 
       if (resp.length !== 0) {
@@ -316,7 +343,9 @@ const loginWithGoogle = async (req: Request, res: Response) => {
         ],
         async (err, resp2) => {
           if (err) {
-            return res.status(500).json({ msg: "Database error" });
+            return res
+              .status(StatusCodes.INTERNAL_SERVER_ERROR)
+              .json({ msg: "Database error" });
           }
 
           const user: {
@@ -341,6 +370,7 @@ const loginWithGoogle = async (req: Request, res: Response) => {
     }
   );
 };
+
 const loginWithFacebook = async (req: Request, res: Response) => {
   const { accessToken } = req.body;
 
@@ -372,7 +402,9 @@ const loginWithFacebook = async (req: Request, res: Response) => {
     [fbUserData.id],
     async (err, resp) => {
       if (err) {
-        return res.status(500).json({ msg: "Database error" });
+        return res
+          .status(StatusCodes.INTERNAL_SERVER_ERROR)
+          .json({ msg: "Database error" });
       }
 
       if (resp.length !== 0) {
@@ -392,7 +424,9 @@ const loginWithFacebook = async (req: Request, res: Response) => {
         ],
         async (err, resp2) => {
           if (err) {
-            return res.status(500).json({ msg: "Database error" });
+            return res
+              .status(StatusCodes.INTERNAL_SERVER_ERROR)
+              .json({ msg: "Database error" });
           }
 
           const user: {
@@ -424,7 +458,9 @@ const logout = async (req: Request, res: Response) => {
     [(req as any).user.user.userId],
     async (err, resp2) => {
       if (err) {
-        return res.status(500).json({ msg: "Database error" });
+        return res
+          .status(StatusCodes.INTERNAL_SERVER_ERROR)
+          .json({ msg: "Database error" });
       }
 
       res.json({ msg: "user logged out!" });

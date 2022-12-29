@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { StatusCodes } from "http-status-codes";
 import connectDB from "../db/connect";
 import { BadRequestError, UnauthenticatedError } from "../errors";
 import { createAccessJWT, isTokenValid } from "../utils/jwt";
@@ -24,7 +25,9 @@ const refreshToken = async (req: Request, res: Response) => {
     [payload.user.userId, payload.refreshToken],
     async (err, resp3) => {
       if (err) {
-        return res.status(500).json({ msg: "Database error" });
+        return res
+          .status(StatusCodes.INTERNAL_SERVER_ERROR)
+          .json({ msg: "Database error" });
       }
 
       const existingToken = resp3[0];
