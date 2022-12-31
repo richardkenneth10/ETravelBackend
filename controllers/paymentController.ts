@@ -65,14 +65,14 @@ const _errorHandler = async (error: any, res: Response) => {
       await stripe.paymentIntents.retrieve(error.raw.payment_intent.id);
     return res.json({
       requires_authentication: true,
-      client_secret: paymentIntentRetrieved.client_secret,
+      clientSecret: paymentIntentRetrieved.client_secret,
       payment_method_id:
         paymentIntentRetrieved.last_payment_error!.payment_method!.id,
     } as PaymentIntentResponse);
   } else if (error["decline_code"]) {
     return res
       .status(StatusCodes.BAD_REQUEST)
-      .json({ declined: true, msg: "declined transaction" });
+      .json({ declined: true, msg: "Declined transaction" });
   } else {
     return res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
@@ -84,7 +84,7 @@ const payWithCard = async (req: Request, res: Response) => {
   const { paymentMethodId, rideId } = req.body;
 
   if (!paymentMethodId || !rideId) {
-    throw new BadRequestError("Payment method id and Ride id are required");
+    throw new BadRequestError("Payment method id and ride id are required");
   }
 
   try {
