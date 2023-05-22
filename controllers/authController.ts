@@ -20,7 +20,7 @@ import {
   sendTokenWithResponse,
 } from "../utils/sendTokenWithResponse";
 
-const accountSid = "AC7d60c28d42446c12bb412c9a1f10d19f";
+const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
 const client = Client(accountSid, authToken);
 

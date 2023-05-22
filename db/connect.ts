@@ -3,10 +3,10 @@ import mysql, { Connection } from "mysql";
 const connectDB = () =>
   new Promise<Connection>((resolve, reject) => {
     const con = mysql.createConnection({
-      host: "nodejs-apps.cluster-c5wjyxdbbmlo.us-east-1.rds.amazonaws.com",
-      user: "admin",
-      password: "richiemysql",
-      database: "etravel",
+      host: process.env.DATABASE_HOST,
+      user: process.env.DATABASE_USERNAME,
+      password: process.env.DATABASE_PASSWORD,
+      database: process.env.DATABASE_NAME,
     });
 
     con.connect((err: Error) => {
